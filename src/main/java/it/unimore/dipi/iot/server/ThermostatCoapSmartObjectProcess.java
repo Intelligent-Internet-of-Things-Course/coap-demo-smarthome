@@ -20,8 +20,8 @@ public class ThermostatCoapSmartObjectProcess extends CoapServer {
 
     private final static Logger logger = LoggerFactory.getLogger(ThermostatCoapSmartObjectProcess.class);
 
-    public ThermostatCoapSmartObjectProcess() {
-        super();
+    public ThermostatCoapSmartObjectProcess(int port) {
+        super(port);
 
         String deviceId = String.format("dipi:iot:%s", UUID.randomUUID().toString());
 
@@ -59,7 +59,7 @@ public class ThermostatCoapSmartObjectProcess extends CoapServer {
 
     public static void main(String[] args) {
 
-        ThermostatCoapSmartObjectProcess smartObjectProcess = new ThermostatCoapSmartObjectProcess();
+        ThermostatCoapSmartObjectProcess smartObjectProcess = new ThermostatCoapSmartObjectProcess(5684);
         smartObjectProcess.start();
 
         logger.info("Coap Server Started ! Available resources: ");

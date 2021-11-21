@@ -5,6 +5,7 @@ import org.eclipse.californium.core.*;
 import org.eclipse.californium.core.coap.CoAP.Code;
 import org.eclipse.californium.core.coap.LinkFormat;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
+import org.eclipse.californium.core.coap.OptionSet;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.elements.exception.ConnectorException;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public class CoapAutomaticDataFetcherProcess {
 
 	private static final String TARGET_SMART_OBJECT_ADDRESS = "127.0.0.1";
 
-	private static final int TARGET_SMART_OBJECT_IP = 5683;
+	private static final int TARGET_SMART_OBJECT_IP = 5684;
 
 	private static final String WELL_KNOWN_CORE_URI = "/.well-known/core";
 
@@ -37,7 +38,9 @@ public class CoapAutomaticDataFetcherProcess {
 
 	private static final String INTERFACE_CORE_ATTRIBUTE = "if";
 
-	private static List<String> targetObservableResourceList = null;
+	private static final String CONTENT_TYPE_ATTRIBUTE = "ct";
+
+	private static List<TargetCoapResourceDescriptor> targetObservableResourceList = null;
 
 	private static Map<String, CoapObserveRelation> observingRelationMap = null;
 
@@ -54,8 +57,8 @@ public class CoapAutomaticDataFetcherProcess {
 		discoverTargetObservableResources(coapClient);
 
 		//Start observing each resource
-		targetObservableResourceList.forEach(targetResourceUrl -> {
-			startObservingTargetResource(coapClient, targetResourceUrl);
+		targetObservableResourceList.forEach(targetResource -> {
+			startObservingTargetResource(coapClient, targetResource.getTargetUrl(), targetResource.getSenmlSupport());
 		});
 
 		//Sleep and then cancel registrations
@@ -72,18 +75,25 @@ public class CoapAutomaticDataFetcherProcess {
 
 	}
 
-	private static void startObservingTargetResource(CoapClient coapClient, String targetUrl) {
+	private static void startObservingTargetResource(CoapClient coapClient, String targetUrl, boolean useSenml) {
 
 		logger.info("OBSERVING ... {}", targetUrl);
 
-		Request request = Request.newGet().setURI(targetUrl).setObserve();
+		Request request = Request.newGet();
+
+		if(useSenml)
+			request.setOptions(new OptionSet().setAccept(MediaTypeRegistry.APPLICATION_SENML_JSON));
+
+		request.setObserve();
 		request.setConfirmable(true);
+		request.setURI(targetUrl);
 
 		CoapObserveRelation relation = coapClient.observe(request, new CoapHandler() {
 
 			public void onLoad(CoapResponse response) {
 				String content = response.getResponseText();
 				logger.info("Notification -> Resource Target: {} -> Body: {}", targetUrl, content);
+				logger.info("Response Pretty Print: {}", Utils.prettyPrint(response));
 			}
 
 			public void onError() {
@@ -137,7 +147,12 @@ public class CoapAutomaticDataFetcherProcess {
 									link.getAttributes().containsAttribute(INTERFACE_CORE_ATTRIBUTE) &&
 									(link.getAttributes().getAttributeValues(INTERFACE_CORE_ATTRIBUTE).get(0).equals(CoreInterfaces.CORE_S.getValue()) || link.getAttributes().getAttributeValues(INTERFACE_CORE_ATTRIBUTE).get(0).equals(CoreInterfaces.CORE_A.getValue()))){
 
-								logger.info("Target resource found ! URI: {}}", link.getURI());
+								boolean supportSenml = false;
+
+								if(link.getAttributes().containsAttribute(CONTENT_TYPE_ATTRIBUTE))
+									supportSenml = link.getAttributes().getAttributeValues(CONTENT_TYPE_ATTRIBUTE).contains("110");
+
+								logger.info("Target resource found ! URI: {}} (Senml: {})", link.getURI(), supportSenml);
 
 								//E.g. coap://<node_ip>:<node_port>/<resource_uri>
 								String targetResourceUrl = String.format("coap://%s:%d%s",
@@ -145,7 +160,7 @@ public class CoapAutomaticDataFetcherProcess {
 										TARGET_SMART_OBJECT_IP,
 										link.getURI());
 
-								targetObservableResourceList.add(targetResourceUrl);
+								targetObservableResourceList.add(new TargetCoapResourceDescriptor(targetResourceUrl, supportSenml));
 
 								logger.info("Target Resource URL: {} correctly saved !", targetResourceUrl);
 

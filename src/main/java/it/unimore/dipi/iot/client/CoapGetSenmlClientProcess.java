@@ -27,7 +27,8 @@ public class CoapGetSenmlClientProcess {
 
 	private final static Logger logger = LoggerFactory.getLogger(CoapGetSenmlClientProcess.class);
 
-	private static final String COAP_ENDPOINT = "coap://127.0.0.1:5683/configuration";
+	//private static final String COAP_ENDPOINT = "coap://127.0.0.1:5684/configuration";
+	private static final String COAP_ENDPOINT = "coap://127.0.0.1:5684/temperature";
 
 	public static void main(String[] args) {
 		

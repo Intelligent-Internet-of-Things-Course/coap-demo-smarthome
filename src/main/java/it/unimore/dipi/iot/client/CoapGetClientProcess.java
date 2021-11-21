@@ -24,7 +24,7 @@ public class CoapGetClientProcess {
 
 	private final static Logger logger = LoggerFactory.getLogger(CoapGetClientProcess.class);
 
-	private static final String COAP_ENDPOINT = "coap://127.0.0.1:5683/temperature";
+	private static final String COAP_ENDPOINT = "coap://127.0.0.1:5684/temperature";
 
 	public static void main(String[] args) {
 		
