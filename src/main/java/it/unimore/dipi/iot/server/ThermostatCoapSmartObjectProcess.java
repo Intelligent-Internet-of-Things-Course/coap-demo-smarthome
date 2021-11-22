@@ -30,9 +30,17 @@ public class ThermostatCoapSmartObjectProcess extends CoapServer {
         SwitchRawActuator switchRawActuator = new SwitchRawActuator();
         ThermostatRawConfigurationParameter configurationRawParameter = new ThermostatRawConfigurationParameter(new ThermostatConfigurationModel());
 
-        CoapTemperatureResource temperatureResource = new CoapTemperatureResource(deviceId, "temperature", temperatureRawSensor);
-        CoapSwitchActuatorResource switchResource = new CoapSwitchActuatorResource(deviceId, "switch", switchRawActuator);
-        CoapThermostatConfigurationParameterResource configurationResource = new CoapThermostatConfigurationParameterResource(deviceId, "configuration", configurationRawParameter);
+        CoapTemperatureResource temperatureResource = new CoapTemperatureResource(deviceId,
+                "temperature",
+                temperatureRawSensor);
+
+        CoapSwitchActuatorResource switchResource = new CoapSwitchActuatorResource(deviceId,
+                "switch",
+                switchRawActuator);
+
+        CoapThermostatConfigurationParameterResource configurationResource = new CoapThermostatConfigurationParameterResource(deviceId,
+                "configuration",
+                configurationRawParameter);
 
         this.add(temperatureResource);
         this.add(switchResource);

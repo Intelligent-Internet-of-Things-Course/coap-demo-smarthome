@@ -140,7 +140,10 @@ public class CoapAutomaticDataFetcherProcess {
 
 					links.forEach(link -> {
 
-						if(link.getURI() != null && !link.getURI().equals(WELL_KNOWN_CORE_URI) && link.getAttributes() != null && link.getAttributes().getCount() > 0){
+						if(link.getURI() != null
+								&& !link.getURI().equals(WELL_KNOWN_CORE_URI)
+								&& link.getAttributes() != null
+								&& link.getAttributes().getCount() > 0){
 
 							//If the resource is a core.s or core.a and it is observable save the target url reference
 							if(link.getAttributes().containsAttribute(OBSERVABLE_CORE_ATTRIBUTE) &&

@@ -28,7 +28,8 @@ public class CoapResourceDiscoveryClientProcess {
 
 	private final static Logger logger = LoggerFactory.getLogger(CoapResourceDiscoveryClientProcess.class);
 
-	private static final String COAP_ENDPOINT = "coap://127.0.0.1:5683/.well-known/core";
+	//private static final String COAP_ENDPOINT = "coap://127.0.0.1:5683/.well-known/core";
+	private static final String COAP_ENDPOINT = "coap://127.0.0.1:5684/.well-known/core";
 
 	public static void main(String[] args) {
 		
